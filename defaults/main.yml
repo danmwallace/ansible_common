@@ -1,0 +1,52 @@
+---
+# defaults file for setup-ubuntu
+
+###################################################################################
+#                           Ubuntu Configuration
+###################################################################################
+
+# packages_to_install is a list of packages that are required for LibreChat
+# they were taken from the official LibreChat documentation, found here: https://www.librechat.ai/docs/remote/docker_linux
+# you should not need to modify these, unless you have something else you want to add
+
+common_ubuntu_packages:
+- apt-transport-https
+- ca-certificates
+- cockpit
+- curl
+- git
+- gnupg
+- lsb-release
+- python3
+- python3-venv
+- software-properties-common
+- ufw
+
+common_fedora_pkgs:
+- ca-certificates
+- certbot
+- cockpit
+- curl
+- git
+- gnupg2
+- python3
+- python3-virtualenv
+
+common_fedora_docker_pkgs:
+- docker-ce
+- docker-compose-plugin
+- containerd.io
+
+common_dns_resolver: "1.1.1.2"
+
+common_timezone: "America/New_York"
+# Update the URI to the latest version of docker-compose
+
+common_docker_compose_uri: "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64"
+
+common_cert_path: "/etc/letsencrypt/live/{{ host }}"
+common_cockpit_cert_dir: "/etc/cockpit/ws-certs.d"
+
+common_users:
+  - name: dwallace
+    ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKvOb7rLdvMgg+oyI3jsnJVpiOyJUMMm/Ei1l769+Ah5 dwallace@frmwrk"
