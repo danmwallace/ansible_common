@@ -19,8 +19,6 @@ common_ubuntu_packages:
 - lsb-release
 - python3
 - python3-venv
-- software-properties-common
-- ufw
 
 common_fedora_pkgs:
 - ca-certificates
