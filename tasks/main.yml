@@ -14,7 +14,7 @@
 
 - name: "(Debian/Ubuntu) Installing required packages and updating apt repository cache"
   ansible.builtin.package:
-    name: "{{ common_apt_packages }}"
+    name: "{{ common_packages_debian }}"
     state: present
     update_cache: true
   become: true
@@ -32,7 +32,7 @@
 
 - name: "(Fedora - Atomic) Installing required packages"
   community.general.rpm_ostree_pkg:
-    name: "{{ common_fedora_pkgs }}"
+    name: "{{ common_packages_fedora }}"
     state: present
   become: true
   when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "Fedora" and variant_id.stdout == "iot"
@@ -66,92 +66,6 @@
 #    state: enabled
 #    policy: reject
 #  become: true
-
-
-###########################################################
-# Docker configuration for Ubuntu
-
-- name: "(Ubuntu) Import Docker GPG key"
-  ansible.builtin.shell: |
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker.gpg
-  args:
-    creates: /usr/share/keyrings/docker.gpg
-  become: true
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution'] == "Ubuntu"
-
-
-- name: "(Ubuntu) Add Docker Repository"
-  ansible.builtin.apt_repository:
-    repo: "deb [arch=amd64 signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    state: present
-    filename: docker
-  become: true
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution'] == "Ubuntu"
-
-
-- name: "(Ubuntu) Update apt cache"
-  ansible.builtin.package:
-    update_cache: true
-  become: true
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution'] == "Ubuntu"
-
-
-- name: "(Ubuntu) Install Docker"
-  ansible.builtin.package:
-    name: docker-ce
-    state: present
-  become: true
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution'] == "Ubuntu"
-
-
-- name: "(Ubuntu) Download Docker Compose"
-  ansible.builtin.get_url:
-    url: "{{ common_docker_compose_uri }}"
-    dest: /usr/local/bin/docker-compose
-    mode: '0755'
-  become: true
-  when: ansible_facts['os_family'] == "Debian" and ansible_facts['distribution'] == "Ubuntu"
-
-################################
-# Docker configuration for Fedora
-
-- name: (Fedora - Atomic) Copy docker-ce.repo to /etc/yum.repos.d
-  ansible.builtin.copy:
-    src: files/etc/yum.repos.d/docker-ce.repo
-    dest: /etc/yum.repos.d/docker-ce.repo
-    mode: '0644'
-  become: true
-  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "Fedora" and variant_id.stdout == "iot"
-
-- name: (Fedora - Atomic) Install Docker
-  community.general.rpm_ostree_pkg:
-    name: docker-ce
-    state: present
-  become: true
-  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "Fedora" and variant_id.stdout == "iot"
-
-- name: (Fedora - Server) Install Docker
-  ansible.builtin.dnf:
-    name: docker-ce
-    state: present
-  become: true
-  when: ansible_facts['os_family'] == "RedHat" and ansible_facts['distribution'] == "Fedora" and variant_id.stdout == "server"  
-
-################################
-# User configuration
-
-- name: "(General) Make sure docker group exists"
-  ansible.builtin.group:
-    name: docker
-    state: present
-  become: true
-
-- name: "(General) Add ansible user to docker group"
-  ansible.builtin.user:
-    name: ansible
-    groups: docker
-    append: true
-  become: true
 
 - name: "(Ubuntu) Create users"
   ansible.builtin.user:

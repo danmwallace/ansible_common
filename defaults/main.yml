@@ -1,50 +1,57 @@
 ---
-# defaults file for setup-ubuntu
+# defaults file for ansible_common
 
 ###################################################################################
-#                           Ubuntu Configuration
+#                    Package Lists - OS Family Specific
 ###################################################################################
 
-# packages_to_install is a list of packages that are required for LibreChat
-# they were taken from the official LibreChat documentation, found here: https://www.librechat.ai/docs/remote/docker_linux
-# you should not need to modify these, unless you have something else you want to add
+# Packages for Debian family (Ubuntu, Debian)
+# Used when: ansible_facts['os_family'] == "Debian"
+common_packages_debian:
+  - apt-transport-https
+  - ca-certificates
+  - cockpit
+  - curl
+  - git
+  - gnupg
+  - lsb-release
+  - python3
+  - python3-venv
 
-common_ubuntu_packages:
-- apt-transport-https
-- ca-certificates
-- cockpit
-- curl
-- git
-- gnupg
-- lsb-release
-- python3
-- python3-venv
+# Packages for Fedora (both standard and atomic variants)
+# Used when: ansible_facts['distribution'] == "Fedora"
+common_packages_fedora:
+  - ca-certificates
+  - certbot
+  - curl
+  - git
+  - gnupg2
+  - python3
+  - python3-virtualenv
 
-common_fedora_pkgs:
-- ca-certificates
-- certbot
-- cockpit
-- curl
-- git
-- gnupg2
-- python3
-- python3-virtualenv
+###################################################################################
+#                         Network Configuration
+###################################################################################
 
-common_fedora_docker_pkgs:
-- docker-ce
-- docker-compose-plugin
-- containerd.io
-
+# DNS resolver to use for the system
 common_dns_resolver: "1.1.1.2"
 
+###################################################################################
+#                         System Configuration
+###################################################################################
+
+# Timezone setting for the system
 common_timezone: "America/New_York"
-# Update the URI to the latest version of docker-compose
 
-common_docker_compose_uri: "https://github.com/docker/compose/releases/download/v2.29.7/docker-compose-linux-x86_64"
+###################################################################################
+#                         User Configuration
+###################################################################################
 
-common_cert_path: "/etc/letsencrypt/live/{{ host }}"
-common_cockpit_cert_dir: "/etc/cockpit/ws-certs.d"
-
-common_users:
-  - name: dwallace
-    ssh_key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKvOb7rLdvMgg+oyI3jsnJVpiOyJUMMm/Ei1l769+Ah5 dwallace@frmwrk"
+# Users to create on the system
+# Each user should have 'name' and 'ssh_key' defined
+# Override this in group_vars or host_vars with actual users
+# Example:
+#   common_users:
+#     - name: username
+#       ssh_key: "ssh-ed25519 AAAAC3N..."
+common_users: []
